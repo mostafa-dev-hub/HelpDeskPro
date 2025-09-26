@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HelpDesk Pro - Ticketing System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Login Page -->
+        <div id="loginPage" class="login-container">
+            <div class="logo">HelpDesk Pro</div>
+            <div class="login-subtitle">Professional Ticketing System</div>
+            
+            <!-- User Type Selector -->
+            <div class="user-type-selector">
+                <button type="button" class="user-type-btn active" onclick="selectUserType('admin')">
+                    Admin/Staff
+                </button>
+                <button type="button" class="user-type-btn" onclick="selectUserType('customer')">
+                    Customer
+                </button>
+            </div>
+            
+            <form id="loginForm" onsubmit="return handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <button type="submit" class="login-btn">Sign In</button>
+            </form>
+            
+            <!-- Sign Up Link for Customers -->
+            <div class="signup-link customer-only">
+                <p>Don't have an account? <a href="#" onclick="showSignUp()" class="signup-link-text">Sign up here</a></p>
+            </div>
+        </div>
+
+        <!-- Sign Up Page -->
+        <div id="signupPage" class="login-container hidden">
+            <div class="logo">HelpDesk Pro</div>
+            <div class="login-subtitle">Create Your Customer Account</div>
+            
+            <form id="signupForm" onsubmit="return handleSignUp(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="signupFirstName">First Name *</label>
+                        <input type="text" id="signupFirstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupLastName">Last Name *</label>
+                        <input type="text" id="signupLastName" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signupEmail">Email Address *</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signupCompany">Company/Organization</label>
+                    <input type="text" id="signupCompany" placeholder="Optional">
+                </div>
+                
+                <div class="form-group">
+                    <label for="signupPhone">Phone Number</label>
+                    <input type="tel" id="signupPhone" placeholder="Optional">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="signupUsername">Username *</label>
+                        <input type="text" id="signupUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password *</label>
+                        <input type="password" id="signupPassword" required minlength="6">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signupConfirmPassword">Confirm Password *</label>
+                    <input type="password" id="signupConfirmPassword" required minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="agreeTerms" required>
+                        I agree to the <a href="#" onclick="showTerms()">Terms of Service</a> and <a href="#" onclick="showPrivacy()">Privacy Policy</a>
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="emailUpdates">
+                        Send me email updates about system maintenance and new features
+                    </label>
+                </div>
+                
+                <button type="submit" class="login-btn">Create Account</button>
+            </form>
+            
+            <div class="back-to-login">
+                <p>Already have an account? <a href="#" onclick="showLogin()" class="signup-link-text">Sign in here</a></p>
+            </div>
+        </div>
+
+        <!-- Main Application -->
+        <div id="mainApp" class="main-app">
+            <header class="header">
+                <h1>HelpDesk Pro</h1>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div>
+                        <div id="currentUser">Admin User</div>
+                        <div class="user-role-badge" id="userRole">Administrator</div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <div class="main-content">
+                <!-- Admin Sidebar (Full Access) -->
+                <nav class="sidebar admin-only">
+                    <div class="nav-item active" onclick="handleNavigation('dashboard', this)">
+                        📊 Admin Dashboard
+                    </div>
+                    <div class="nav-item" onclick="handleNavigation('tickets', this)">
+                        🎫 All Tickets
+                    </div>
+                    <div class="nav-item" onclick="handleNavigation('myTickets', this)">
+                        👤 My Tickets
+                    </div>
+                    <div class="nav-item" onclick="handleNavigation('newTicket', this)">
+                        ➕ New Ticket
+                    </div>
+                    <div class="nav-item" onclick="handleNavigation('customers', this)">
+                        👥 Customer Management
+                    </div>
+                    <div class="nav-item" onclick="handleNavigation('staff', this)">
+                        👨‍💼 Staff Management
+                    </div>
+                    <div class="nav-item" onclick="handleNavigation('reports', this)">
+                        📈 Reports & Analytics
+                    </div>
+                    <div class="nav-item" onclick="handleNavigation('systemSettings', this)">
+                        ⚙️ System Settings
+                    </div>
+                </nav>
+
+                <!-- Staff Sidebar (Limited Access) -->
+                <nav class="sidebar staff-only">
+                    <div class="nav-item active" onclick="handleNavigation('staffDashboard', this)">
+                        📊 My Dashboard
+                    </div>
+                </nav>
+
+                <!-- Customer Sidebar -->
+                <nav class="sidebar customer-sidebar customer-only">
+                    <div class="nav-item active" onclick="handleNavigation('customerDashboard', this)">
+                        🏠 My Dashboard
+                    </div>
+                    <div class="nav-item" onclick="handleNavigation('myTickets', this)">
+                        🎫 My Tickets
+                    </div>
+                    <div class="nav-item" onclick="handleNavigation('newTicket', this)">
+                        ➕ Submit Ticket
+                    </div>
+                    <div class="nav-item" onclick="handleNavigation('knowledgeBase', this)">
+                        📚 Knowledge Base
+                    </div>
+                    <div class="nav-item" onclick="handleNavigation('profile', this)">
+                        👤 My Profile
+                    </div>
+                </nav>
+
+                <main class="content-area">
+                    <!-- Admin Dashboard (Full System Overview) -->
+                    <div id="dashboardPage" class="admin-only">
+                        <div class="page-header">
+                            <h2 class="page-title">🔧 Administrator Dashboard</h2>
+                            <p class="page-subtitle">Complete system overview and management controls</p>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-card open">
+                                <div class="stat-number" style="color: #ff6b6b;">24</div>
+                                <div class="stat-label">Open Tickets</div>
+                            </div>
+                            <div class="stat-card pending">
+                                <div class="stat-number" style="color: #ffa726;">12</div>
+                                <div class="stat-label">Pending Review</div>
+                            </div>
+                            <div class="stat-card resolved">
+                                <div class="stat-number" style="color: #66bb6a;">89</div>
+                                <div class="stat-label">Resolved Today</div>
+                            </div>
+                            <div class="stat-card closed">
+                                <div class="stat-number" style="color: #42a5f5;">156</div>
+                                <div class="stat-label">Closed This Week</div>
+                            </div>
+                        </div>
+
+                        <!-- Admin-specific quick actions -->
+                        <div class="quick-actions">
+                            <div class="quick-action-card" onclick="handleNavigation('systemSettings', null)">
+                                <div class="quick-action-icon">⚙️</div>
+                                <div class="quick-action-title">System Configuration</div>
+                                <div class="quick-action-desc">Manage system-wide settings and preferences</div>
+                            </div>
+                            <div class="quick-action-card" onclick="handleNavigation('staff', null)">
+                                <div class="quick-action-icon">👨‍💼</div>
+                                <div class="quick-action-title">Staff Management</div>
+                                <div class="quick-action-desc">Add, edit, and manage staff members</div>
+                            </div>
+                            <div class="quick-action-card" onclick="handleNavigation('reports', null)">
+                                <div class="quick-action-icon">📊</div>
+                                <div class="quick-action-title">Advanced Analytics</div>
+                                <div class="quick-action-desc">View detailed reports and system metrics</div>
+                            </div>
+                        </div>
+
+                        <div class="tickets-table">
+                            <div class="table-header">
+                                <h3>🚨 Priority Tickets Requiring Admin Attention</h3>
+                                <button class="new-ticket-btn" onclick="handleNavigation('newTicket', null)">+ Create Ticket</button>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Ticket #</th>
+                                        <th>Subject</th>
+                                        <th>Customer</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Assigned To</th>
+                                        <th>Escalated</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminPriorityTicketsTable">
+                                    <!-- Admin priority tickets will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Staff Dashboard (Agent-focused) -->
+                    <div id="staffDashboardPage" class="staff-only hidden">
+                        <div class="page-header">
+                            <h2 class="page-title">👨‍💼 Staff Dashboard</h2>
+                        </div>
+
+                        <!-- Staff Quick Actions -->
+                        <div class="quick-actions">
+                            <div class="quick-action-card" onclick="handleNavigation('myTickets', null)">
+                                <div class="quick-action-icon">📋</div>
+                                <div class="quick-action-title">My Work Queue</div>
+                                <div class="quick-action-desc">View and manage your assigned tickets</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Dashboard -->
+                    <div id="customerDashboardPage" class="customer-only hidden">
+                        <div class="welcome-section">
+                            <h2 class="welcome-title">Welcome back!</h2>
+                            <p class="welcome-subtitle">How can we help you today?</p>
+                        </div>
+
+                        <div class="quick-actions">
+                            <div class="quick-action-card" onclick="handleNavigation('newTicket', null)">
+                                <div class="quick-action-icon">🎫</div>
+                                <div class="quick-action-title">Submit New Ticket</div>
+                                <div class="quick-action-desc">Get help with technical issues or questions</div>
+                            </div>
+                            <div class="quick-action-card" onclick="handleNavigation('myTickets', null)">
+                                <div class="quick-action-icon">📋</div>
+                                <div class="quick-action-title">View My Tickets</div>
+                                <div class="quick-action-desc">Check status of your existing requests</div>
+                            </div>
+                            <div class="quick-action-card" onclick="handleNavigation('knowledgeBase', null)">
+                                <div class="quick-action-icon">📚</div>
+                                <div class="quick-action-title">Browse Knowledge Base</div>
+                                <div class="quick-action-desc">Find answers to common questions</div>
+                            </div>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-card total">
+                                <div class="stat-number" style="color: #667eea;" id="customerTotalTickets">5</div>
+                                <div class="stat-label">Total Tickets</div>
+                            </div>
+                            <div class="stat-card open">
+                                <div class="stat-number" style="color: #ff6b6b;" id="customerOpenTickets">2</div>
+                                <div class="stat-label">Open Tickets</div>
+                            </div>
+                            <div class="stat-card resolved">
+                                <div class="stat-number" style="color: #66bb6a;" id="customerResolvedTickets">3</div>
+                                <div class="stat-label">Resolved Tickets</div>
+                            </div>
+                        </div>
+
+                        <div class="tickets-table">
+                            <div class="table-header">
+                                <h3>My Recent Tickets</h3>
+                                <button class="new-ticket-btn" onclick="handleNavigation('newTicket', null)">+ Submit New Ticket</button>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Ticket #</th>
+                                        <th>Subject</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Last Updated</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customerRecentTicketsTable">
+                                    <!-- Customer tickets will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- All Tickets Page (Admin Only) -->
+                    <div id="ticketsPage" class="hidden admin-only">
+                        <div class="page-header">
+                            <h2 class="page-title">All Tickets</h2>
+                            <p class="page-subtitle">Complete list of support tickets</p>
+                        </div>
+
+                        <div class="tickets-table">
+                            <div class="table-header">
+                                <h3>All Support Tickets</h3>
+                                <button class="new-ticket-btn" onclick="openNewTicketModal()">+ New Ticket</button>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Ticket #</th>
+                                        <th>Subject</th>
+                                        <th>Customer</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Assigned To</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allTicketsTable">
+                                    <!-- Tickets will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- My Tickets Page -->
+                    <div id="myTicketsPage" class="hidden">
+                        <div class="page-header">
+                            <h2 class="page-title">My Tickets</h2>
+                            <p class="page-subtitle admin-only">Tickets assigned to you</p>
+                            <p class="page-subtitle customer-only">Your submitted tickets</p>
+                        </div>
+
+                        <div class="tickets-table">
+                            <div class="table-header">
+                                <h3 class="admin-only">My Assigned Tickets</h3>
+                                <h3 class="customer-only">My Support Tickets</h3>
+                                <button class="new-ticket-btn customer-only" onclick="showPage('newTicket')">+ Submit New Ticket</button>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Ticket #</th>
+                                        <th>Subject</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Last Update</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="myTicketsTable">
+                                    <!-- Tickets will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- New Ticket Page -->
+                    <div id="newTicketPage" class="hidden">
+                        <div class="page-header">
+                            <h2 class="page-title admin-only">Create New Ticket</h2>
+                            <h2 class="page-title customer-only">Submit Support Request</h2>
+                            <p class="page-subtitle admin-only">Create a new support ticket on behalf of a customer</p>
+                            <p class="page-subtitle customer-only">Tell us about your issue and we'll help you resolve it</p>
+                        </div>
+
+                        <div class="tickets-table">
+                            <div style="padding: 30px;">
+                                <form id="newTicketForm" onsubmit="handleFormSubmit(event);">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="ticketSubject">Subject *</label>
+                                            <input type="text" id="ticketSubject" placeholder="Brief description of the issue" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="ticketPriority">Priority</label>
+                                            <select id="ticketPriority">
+                                                <option value="Low">Low</option>
+                                                <option value="Medium" selected>Medium</option>
+                                                <option value="High">High</option>
+                                                <option value="Critical" class="admin-only">Critical</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="ticketCategory">Category</label>
+                                            <select id="ticketCategory">
+                                                <option value="1">Technical Support</option>
+                                                <option value="2">Billing</option>
+                                                <option value="3">General Inquiry</option>
+                                                <option value="4">Bug Report</option>
+                                                <option value="5">Feature Request</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group admin-only">
+                                            <label for="ticketCustomer">Customer Email</label>
+                                            <input type="email" id="ticketCustomer" placeholder="customer@example.com" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="ticketDescription">Description *</label>
+                                        <textarea id="ticketDescription" placeholder="Please provide detailed information about your issue, including any error messages and steps to reproduce the problem..." required></textarea>
+                                    </div>
+
+                                    <button type="button" class="new-ticket-btn" onclick="console.log('Submit button clicked!'); createNewTicket('newTicketForm');">
+                                        <span class="admin-only">Create Ticket</span>
+                                        <span class="customer-only">Submit Ticket</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Knowledge Base Page (Customer Only) -->
+                    <div id="knowledgeBasePage" class="hidden customer-only">
+                        <div class="page-header">
+                            <h2 class="page-title">Knowledge Base</h2>
+                            <p class="page-subtitle">Find answers to frequently asked questions</p>
+                        </div>
+
+                        <div class="kb-search">
+                            <input type="text" class="search-box" placeholder="Search articles, FAQs, and guides..." id="kbSearchBox">
+                        </div>
+
+                        <div class="kb-categories">
+                            <div class="kb-category">
+                                <h3>🔧 Technical Support</h3>
+                                <ul class="kb-articles">
+                                    <li onclick="showArticle('login-issues')">How to resolve login issues</li>
+                                    <li onclick="showArticle('password-reset')">Reset your password</li>
+                                    <li onclick="showArticle('browser-compatibility')">Browser compatibility guide</li>
+                                    <li onclick="showArticle('mobile-app')">Mobile app troubleshooting</li>
+                                </ul>
+                            </div>
+                            <div class="kb-category">
+                                <h3>💳 Billing & Accounts</h3>
+                                <ul class="kb-articles">
+                                    <li onclick="showArticle('billing-cycle')">Understanding your billing cycle</li>
+                                    <li onclick="showArticle('payment-methods')">Accepted payment methods</li>
+                                    <li onclick="showArticle('refund-policy')">Refund and cancellation policy</li>
+                                    <li onclick="showArticle('upgrade-plan')">How to upgrade your plan</li>
+                                </ul>
+                            </div>
+                            <div class="kb-category">
+                                <h3>🚀 Getting Started</h3>
+                                <ul class="kb-articles">
+                                    <li onclick="showArticle('first-steps')">First steps after registration</li>
+                                    <li onclick="showArticle('setup-guide')">Complete setup guide</li>
+                                    <li onclick="showArticle('basic-features')">Overview of basic features</li>
+                                    <li onclick="showArticle('tutorials')">Video tutorials</li>
+                                </ul>
+                            </div>
+                            <div class="kb-category">
+                                <h3>🔒 Security & Privacy</h3>
+                                <ul class="kb-articles">
+                                    <li onclick="showArticle('2fa-setup')">Setting up two-factor authentication</li>
+                                    <li onclick="showArticle('data-privacy')">Data privacy and security</li>
+                                    <li onclick="showArticle('account-security')">Account security best practices</li>
+                                    <li onclick="showArticle('gdpr-compliance')">GDPR compliance information</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Profile Page -->
+                    <div id="profilePage" class="hidden customer-only">
+                        <div class="page-header">
+                            <h2 class="page-title">My Profile</h2>
+                            <p class="page-subtitle">Manage your account information and preferences</p>
+                        </div>
+
+                        <div class="tickets-table">
+                            <div style="padding: 30px;">
+                                <form id="profileForm">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="profileName">Full Name</label>
+                                            <input type="text" id="profileName" value="John Doe">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="profileEmail">Email Address</label>
+                                            <input type="email" id="profileEmail" value="john.doe@email.com" readonly>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="profilePhone">Phone Number</label>
+                                            <input type="tel" id="profilePhone" value="+1 (555) 123-4567">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="profileCompany">Company</label>
+                                            <input type="text" id="profileCompany" value="Tech Solutions Inc.">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>
+                                            <input type="checkbox" id="emailNotifications" checked> 
+                                            Receive email notifications for ticket updates
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>
+                                            <input type="checkbox" id="marketingEmails"> 
+                                            Receive promotional emails and product updates
+                                        </label>
+                                    </div>
+
+                                    <button type="submit" class="new-ticket-btn" onclick="handleProfileUpdate(event)">Update Profile</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customers Page (Admin Only) -->
+                    <div id="customersPage" class="hidden admin-only">
+                        <div class="page-header">
+                            <h2 class="page-title">Customer Management</h2>
+                            <p class="page-subtitle">Manage customer accounts and view their ticket history</p>
+                        </div>
+
+                        <div class="tickets-table">
+                            <div class="table-header">
+                                <h3>All Customers</h3>
+                                <button class="new-ticket-btn" onclick="openNewCustomerModal()">+ Add Customer</button>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Customer ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Company</th>
+                                        <th>Total Tickets</th>
+                                        <th>Open Tickets</th>
+                                        <th>Last Activity</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customersTable">
+                                    <tr>
+                                        <td><strong>CUST-001</strong></td>
+                                        <td>John Doe</td>
+                                        <td>john.doe@email.com</td>
+                                        <td>Tech Solutions Inc.</td>
+                                        <td>5</td>
+                                        <td><span class="status-badge status-open">2</span></td>
+                                        <td>2025-08-04 14:30</td>
+                                        <td>
+                                            <button class="action-btn" onclick="viewCustomer('CUST-001')">View</button>
+                                            <button class="action-btn secondary" onclick="editCustomer('CUST-001')">Edit</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>CUST-002</strong></td>
+                                        <td>Jane Smith</td>
+                                        <td>jane.smith@email.com</td>
+                                        <td>Digital Marketing Co.</td>
+                                        <td>8</td>
+                                        <td><span class="status-badge status-resolved">0</span></td>
+                                        <td>2025-08-03 09:15</td>
+                                        <td>
+                                            <button class="action-btn" onclick="viewCustomer('CUST-002')">View</button>
+                                            <button class="action-btn secondary" onclick="editCustomer('CUST-002')">Edit</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Reports Page (Admin Only) -->
+                    <div id="reportsPage" class="hidden admin-only">
+                        <div class="page-header">
+                            <h2 class="page-title">Reports & Analytics</h2>
+                            <p class="page-subtitle">Performance metrics and insights</p>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number" style="color: #667eea;">4.2</div>
+                                <div class="stat-label">Avg. Response Time (hrs)</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" style="color: #764ba2;">92%</div>
+                                <div class="stat-label">Customer Satisfaction</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" style="color: #ff6b6b;">281</div>
+                                <div class="stat-label">Total Tickets This Month</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" style="color: #66bb6a;">87%</div>
+                                <div class="stat-label">Resolution Rate</div>
+                            </div>
+                        </div>
+
+                        <div class="tickets-table">
+                            <div class="table-header">
+                                <h3>Performance by Agent</h3>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Agent</th>
+                                        <th>Assigned Tickets</th>
+                                        <th>Resolved Tickets</th>
+                                        <th>Avg. Resolution Time</th>
+                                        <th>Customer Rating</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Sarah Wilson</td>
+                                        <td>24</td>
+                                        <td>22</td>
+                                        <td>3.5 hrs</td>
+                                        <td>4.8/5.0</td>
+                                        <td><span class="status-badge status-resolved">Active</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mike Johnson</td>
+                                        <td>18</td>
+                                        <td>16</td>
+                                        <td>4.2 hrs</td>
+                                        <td>4.6/5.0</td>
+                                        <td><span class="status-badge status-resolved">Active</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Admin User</td>
+                                        <td>12</td>
+                                        <td>11</td>
+                                        <td>2.8 hrs</td>
+                                        <td>4.9/5.0</td>
+                                        <td><span class="status-badge status-resolved">Active</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Settings Page -->
+                    <div id="settingsPage" class="hidden">
+                        <div class="page-header">
+                            <h2 class="page-title">Settings</h2>
+                            <p class="page-subtitle admin-only">Configure system preferences and user management</p>
+                            <p class="page-subtitle customer-only">Configure your account preferences</p>
+                        </div>
+
+                        <div class="tickets-table">
+                            <div style="padding: 30px;">
+                                <h3 style="margin-bottom: 20px;" class="admin-only">System Settings</h3>
+                                <h3 style="margin-bottom: 20px;" class="customer-only">Account Preferences</h3>
+                                
+                                <div class="form-group">
+                                    <label for="emailNotificationsSettings">
+                                        <input type="checkbox" id="emailNotificationsSettings" checked> 
+                                        Email Notifications
+                                    </label>
+                                </div>
+                                
+                                <div class="form-group admin-only">
+                                    <label for="autoAssign">
+                                        <input type="checkbox" id="autoAssign"> 
+                                        Auto-assign tickets to available agents
+                                    </label>
+                                </div>
+
+                                <div class="form-group admin-only">
+                                    <label for="defaultPriority">Default Priority for New Tickets</label>
+                                    <select id="defaultPriority">
+                                        <option value="Low">Low</option>
+                                        <option value="Medium" selected>Medium</option>
+                                        <option value="High">High</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group customer-only">
+                                    <label for="preferredContact">Preferred Contact Method</label>
+                                    <select id="preferredContact">
+                                        <option value="email" selected>Email</option>
+                                        <option value="phone">Phone</option>
+                                        <option value="sms">SMS</option>
+                                    </select>
+                                </div>
+
+                                <button class="new-ticket-btn">Save Settings</button>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Ticket Modal -->
+    <div id="newTicketModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Ticket</h3>
+                <span class="close" onclick="closeNewTicketModal()">&times;</span>
+            </div>
+            <form id="modalTicketForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="modalTicketSubject">Subject *</label>
+                        <input type="text" id="modalTicketSubject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalTicketPriority">Priority</label>
+                        <select id="modalTicketPriority">
+                            <option value="Low">Low</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="High">High</option>
+                            <option value="Critical">Critical</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="modalTicketCategory">Category</label>
+                        <select id="modalTicketCategory">
+                            <option value="1">Technical Support</option>
+                            <option value="2">Billing</option>
+                            <option value="3">General Inquiry</option>
+                            <option value="4">Bug Report</option>
+                            <option value="5">Feature Request</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalTicketCustomer">Customer Email</label>
+                        <input type="email" id="modalTicketCustomer" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="modalTicketDescription">Description *</label>
+                    <textarea id="modalTicketDescription" placeholder="Describe the issue in detail..." required></textarea>
+                </div>
+
+                <button type="submit" class="new-ticket-btn" style="width: 100%;">Create Ticket</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
