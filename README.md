@@ -56,7 +56,7 @@ Before running this application, ensure you have:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/helpdesk-pro.git
+git clone https://github.com/mostafa-dev-hub/HelpDeskPro.git
 cd helpdesk-pro
 ```
 
